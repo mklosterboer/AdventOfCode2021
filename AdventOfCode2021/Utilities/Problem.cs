@@ -24,14 +24,14 @@
         {
             var inputValues = GetInputValue();
 
-            return inputValues.Split('\n').Select(int.Parse).ToHashSet();
+            return inputValues.Split('\n').Select(int.Parse).ToList();
         }
 
         protected IEnumerable<string> GetInputStringList()
         {
             var inputValues = GetInputValue();
 
-            return inputValues.Split('\n').Select(x => x.Replace("\n", "").Replace("\r", "")).ToHashSet();
+            return inputValues.Split('\n').Select(x => x.Replace("\n", "").Replace("\r", "")).ToList();
         }
 
         abstract public object PartOne();
