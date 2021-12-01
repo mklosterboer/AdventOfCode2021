@@ -15,23 +15,23 @@
         {
         }
 
-        protected string GetInputValue()
+        protected string[] GetInputValue()
         {
-            return File.ReadAllText($"Data/{ProblemName}.txt");
+            return File.ReadAllLines($"Data/{ProblemName}.txt");
         }
 
         protected IEnumerable<int> GetInputNumberList()
         {
             var inputValues = GetInputValue();
 
-            return inputValues.Split('\n').Select(int.Parse).ToList();
+            return inputValues.Select(int.Parse).ToList();
         }
 
         protected IEnumerable<string> GetInputStringList()
         {
             var inputValues = GetInputValue();
 
-            return inputValues.Split('\n').Select(x => x.Replace("\n", "").Replace("\r", "")).ToList();
+            return inputValues.Select(x => x.Replace("\n", "").Replace("\r", "")).ToList();
         }
 
         abstract public object PartOne();
