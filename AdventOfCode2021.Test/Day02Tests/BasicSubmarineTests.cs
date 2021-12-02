@@ -16,7 +16,6 @@ namespace AdventOfCode2021.Test.Day02Tests
             var submarine = new BasicSubmarine();
             var instruction = new Instruction(direction, amount);
 
-
             // Act
             submarine.Move(instruction);
 
