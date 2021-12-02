@@ -2,7 +2,7 @@
 
 namespace AdventOfCode2021.Problems
 {
-    public class Day01 : Problem, IProblem
+    public class Day01 : Problem
     {
         protected override string ProblemName => "Day01";
         private IEnumerable<int> Measurements { get; set; }
