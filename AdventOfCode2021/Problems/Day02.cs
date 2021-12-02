@@ -24,7 +24,7 @@ namespace AdventOfCode2021.Problems
                 submarine.Move(instruction);
             }
 
-            return submarine.Position;
+            return submarine.Depth * submarine.HorizontalPosition;
         }
 
         public override object PartTwo()
@@ -38,17 +38,17 @@ namespace AdventOfCode2021.Problems
                 submarine.Move(instruction);
             }
 
-            return submarine.Position;
+            return submarine.Depth * submarine.HorizontalPosition;
         }
 
-        internal enum Direction
+        public enum Direction
         {
             Foward,
             Down,
             Up
         }
 
-        internal class Instruction
+        public class Instruction
         {
             public Direction Direction { get; set; }
             public int Amount { get; set; }
@@ -78,14 +78,18 @@ namespace AdventOfCode2021.Problems
                         break;
                 }
             }
+
+            public Instruction(Direction direciton, int amount)
+            {
+                Direction = direciton;
+                Amount = amount;
+            }
         }
 
-        internal abstract class Submarine
+        public abstract class Submarine
         {
-            protected int Depth = 0;
-            protected int HorizontalPosition = 0;
-
-            public int Position => Depth * HorizontalPosition;
+            public int Depth = 0;
+            public int HorizontalPosition = 0;
 
             public void Move(Instruction instruction)
             {
@@ -112,7 +116,7 @@ namespace AdventOfCode2021.Problems
             protected abstract void Down(int amount);
         }
 
-        internal class BasicSubmarine : Submarine
+        public class BasicSubmarine : Submarine
         {
             protected override void Forward(int amount)
             {
@@ -130,7 +134,7 @@ namespace AdventOfCode2021.Problems
             }
         }
 
-        internal class AimedSubmarine : Submarine
+        public class AimedSubmarine : Submarine
         {
             private int Aim = 0;
 
