@@ -66,7 +66,7 @@ namespace AdventOfCode2021.Problems
 
                 char mostCommonBit = oneCount < zeroCount ? '0' : '1';
 
-                if (oxygenData.Count() != 1)
+                if (oxygenData.Count() == 1)
                 {
                     break;
                 }
