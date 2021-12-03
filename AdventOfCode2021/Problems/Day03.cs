@@ -61,15 +61,12 @@ namespace AdventOfCode2021.Problems
             IEnumerable<string> oxygenData = new List<string>(Data);
 
             for (int i = 0; i < LengthOfBit; i++)
-            {
+            { 
+                if (oxygenData.Count() == 1) break;
+
                 var (oneCount, zeroCount) = GetCounts(oxygenData, i);
 
                 char mostCommonBit = oneCount < zeroCount ? '0' : '1';
-
-                if (oxygenData.Count() == 1)
-                {
-                    break;
-                }
 
                 oxygenData = oxygenData.Where(x => x[i] == mostCommonBit).ToList();
             }
@@ -83,14 +80,11 @@ namespace AdventOfCode2021.Problems
 
             for (int i = 0; i < LengthOfBit; i++)
             {
+                if (co2Data.Count() == 1) break;
+
                 var (oneCount, zeroCount) = GetCounts(co2Data, i);
 
                 char leastCommonBit = oneCount < zeroCount ? '1' : '0';
-
-                if (co2Data.Count() == 1)
-                {
-                    break;
-                }
 
                 co2Data = co2Data.Where(x => x[i] == leastCommonBit).ToList();
             }
