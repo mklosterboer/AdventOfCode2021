@@ -1,7 +1,7 @@
 ﻿using AdventOfCode2021.Problems;
 using AdventOfCode2021.Utilities;
 
-IProblem problem = new Day05();
+IProblem problem = new Day06();
 
 var runner = new Runner(problem);
 
