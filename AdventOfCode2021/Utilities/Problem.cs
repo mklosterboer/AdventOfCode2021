@@ -34,6 +34,11 @@
             return inputValues.Select(x => x.Replace("\n", "").Replace("\r", "")).ToList();
         }
 
+        protected string GetFirstRow()
+        {
+            return GetInputValue().ElementAt(0);
+        }
+
         abstract public object PartOne();
         abstract public object PartTwo();
     }

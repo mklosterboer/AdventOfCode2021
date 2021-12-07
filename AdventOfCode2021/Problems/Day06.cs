@@ -9,7 +9,7 @@ namespace AdventOfCode2021.Problems
 
         public Day06()
         {
-            Input = GetInputValue().ElementAt(0).Split(',').Select(x => int.Parse(x));
+            Input = GetFirstRow().Split(',').Select(x => int.Parse(x));
         }
 
         public override object PartOne()

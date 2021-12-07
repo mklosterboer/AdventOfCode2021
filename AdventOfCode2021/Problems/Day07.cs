@@ -9,7 +9,7 @@ namespace AdventOfCode2021.Problems
 
         public Day07()
         {
-            InputData = GetInputValue().ElementAt(0).Split(',').Select(x => int.Parse(x));
+            InputData = GetFirstRow().Split(',').Select(x => int.Parse(x));
         }
 
         public override object PartOne()
@@ -46,7 +46,7 @@ namespace AdventOfCode2021.Problems
                 {
                     var steps = Math.Abs(i - location);
 
-                    // 1 + 2 + ... + (n) = (n (n + 1) /2
+                    // 1 + 2 + ... + (n) = (n(n + 1) / 2
                     crabCost += (steps * (steps + 1)) / 2;
                 }
                 costs.Add(crabCost);
