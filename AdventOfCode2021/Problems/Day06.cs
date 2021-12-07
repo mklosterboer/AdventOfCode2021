@@ -5,6 +5,10 @@ namespace AdventOfCode2021.Problems
     internal class Day06 : Problem
     {
         protected override string ProblemName => "Day06";
+
+        private const int NewFishGestationPeriod = 8;
+        private const int ExistingFishGestationPeriod = 6;
+
         private IEnumerable<int> Input { get; set; }
 
         public Day06()
@@ -24,26 +28,20 @@ namespace AdventOfCode2021.Problems
 
         private long GetFishCountAfter(int days)
         {
-            // Setup dictionary of all possible ages of fish and a count of how many fish
-            // are that age on this day.
-            var fishCountByAge = new Dictionary<long, long>
-            {
-                {0,0}, {1,0}, {2,0}, {3,0}, {4,0}, {5,0}, {6,0}, {7,0}, {8,0}
-            };
+            // Setup dictionary of all possible ages of fish
+            // and a count of how many fish are that age on this day.
+            Dictionary<int, long> fishCountByAge = Enumerable
+                .Range(0, NewFishGestationPeriod + 1)
+                .ToDictionary(
+                    x => x,
+                    x => 0L);
 
-            var initalData = Input
-                .GroupBy(x => x)
-                .Select<IGrouping<int, int>, (int Age, int Count)>(x => new
-                (
-                    x.Key,
-                    x.Count()
-                ));
-
-            // Intialize fishCoundByAge with the input data
-            foreach (var (Age, Count) in initalData)
-            {
-                fishCountByAge[Age] = Count;
-            }
+            // Intialize fishCountByAge with the input data
+            Input.GroupBy(x => x)
+                .ForEach(gp =>
+                {
+                    fishCountByAge[gp.Key] = gp.Count();
+                });
 
             // Loop over the days and shift the count of fish at a given age,
             // then handle reproducing
@@ -59,10 +57,10 @@ namespace AdventOfCode2021.Problems
                 }
 
                 // New fish
-                fishCountByAge[8] = CountToReproduce;
+                fishCountByAge[NewFishGestationPeriod] = CountToReproduce;
 
                 // Reset counter of fish that reproduced. 
-                fishCountByAge[6] += CountToReproduce;
+                fishCountByAge[ExistingFishGestationPeriod] += CountToReproduce;
             }
 
             return fishCountByAge.Sum(x => x.Value);
