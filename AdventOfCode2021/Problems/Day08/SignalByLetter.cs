@@ -1,47 +1,6 @@
-﻿using AdventOfCode2021.Utilities;
-
-namespace AdventOfCode2021.Problems
+﻿namespace AdventOfCode2021.Problems
 {
-    internal class Day08 : Problem
-    {
-        protected override string ProblemName => "Day08";
-        private string[] Input { get; set; }
-
-        private const int OneLength = 2;
-        private const int FourLength = 4;
-        private const int SevenLength = 3;
-        private const int EightLength = 7;
-
-        public Day08()
-        {
-            Input = GetInputValue();
-        }
-
-        public override object PartOne()
-        {
-            return Input
-                .Select(x => x
-                    .Split(" | ")
-                    .ElementAt(1)
-                    .Trim()
-                    .Split(' '))
-                .SelectMany(x => x)
-                .Count(o => o.Length is
-                    OneLength
-                    or FourLength
-                    or SevenLength
-                    or EightLength);
-        }
-
-        public override object PartTwo()
-        {
-            return Input
-                .Select(x => new Signal(x))
-                .Sum(s => s.GetTranslatedOutputValue());
-        }
-    }
-
-    internal class Signal
+    internal class SignalByLetter
     {
         private const int OneLength = 2;
         private const int FourLength = 4;
@@ -59,7 +18,7 @@ namespace AdventOfCode2021.Problems
         private List<string> SignalPatterns { get; set; }
         private List<string> Outputs { get; set; }
 
-        public Signal(string inputValue)
+        public SignalByLetter(string inputValue)
         {
             var splitInput = inputValue.Split(" | ");
 
