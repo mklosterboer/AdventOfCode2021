@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2021.Problems
+﻿using AdventOfCode2021.Utilities;
+
+namespace AdventOfCode2021.Problems
 {
     internal class SignalByVisual
     {
@@ -19,7 +21,7 @@
         {
             var splitInput = inputValue.Split(" | ");
 
-            SignalPatterns = splitInput.ElementAt(0).Trim().Split(' ').ToList();
+            SignalPatterns = splitInput.ElementAt(0).Split(' ').ToList();
 
             Outputs = splitInput.ElementAt(1).Trim().Split(' ').ToList();
 
@@ -108,30 +110,29 @@
                 F - 9
              */
 
-            // This still seems to be slower than the SignalByLetters version,
-            // but I genuinely don't know why...
+            var countDictionary = new Dictionary<char, int>()
+            {
+                {'a', 0 }, {'b', 0 }, {'c', 0 }, {'d', 0 }, {'e', 0 }, {'f', 0 }, {'g', 0}
+            };
 
-            var countOfLetters = SignalPatterns
-                .SelectMany(x => x)
-                .GroupBy(x => x)
-                .Select(x => new
+            SignalPatterns.ForEach(pattern =>
+                pattern.ForEach(letter =>
                 {
-                    Value = x.Key,
-                    Count = x.Count()
-                })
-                .ToList();
+                    countDictionary[letter] += 1;
+                }
+            ));
 
             // These segments show a unique amount of times.
-            E = countOfLetters.Where(x => x.Count == 4).Select(x => x.Value).Single();
-            B = countOfLetters.Where(x => x.Count == 6).Select(x => x.Value).Single();
-            F = countOfLetters.Where(x => x.Count == 9).Select(x => x.Value).Single();
+            E = countDictionary.Single(x => x.Value == 4).Key;
+            B = countDictionary.Single(x => x.Value == 6).Key;
+            F = countDictionary.Single(x => x.Value == 9).Key;
 
             // Find C
             /// One is a unique length.
             var foundOne = SignalPatterns.Single(x => x.Length is OneLength);
 
             /// One is "cf", so remove "F" to find "C".
-            C = ReplaceAllOtherCharacters(foundOne, $"{F}");
+            C = char.Parse(foundOne.Replace(F.ToString(), ""));
 
             // We don't actually need all the letter to deduce the output values
         }
@@ -148,18 +149,5 @@
         private static bool IsFour(string input) => input.Length is FourLength;
         private static bool IsSeven(string input) => input.Length is SevenLength;
         private static bool IsEight(string input) => input.Length is EightLength;
-
-        private static char ReplaceAllOtherCharacters(string stringToFilter, string filterString)
-        {
-            var newString = stringToFilter;
-
-            foreach (char character in filterString)
-            {
-                newString = newString.Replace(character.ToString(), "");
-            }
-
-            return newString.ToCharArray().Single();
-
-        }
     }
 }

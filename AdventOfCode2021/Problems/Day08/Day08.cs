@@ -37,7 +37,7 @@ namespace AdventOfCode2021.Problems
         {
 
             return Input
-                .Select(x => new SignalByLetter(x))
+                .Select(x => new SignalByVisual(x))
                 .Sum(s => s.GetTranslatedOutputValue());
         }
     }

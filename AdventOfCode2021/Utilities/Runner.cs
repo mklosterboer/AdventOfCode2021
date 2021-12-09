@@ -39,7 +39,7 @@ namespace AdventOfCode2021.Utilities
         private string GetExecutionTime()
         {
             Stopwatch.Stop();
-            return Stopwatch.ElapsedMilliseconds.ToString("F3");
+            return Stopwatch.ElapsedMilliseconds.ToString("F10");
         }
     }
 }
