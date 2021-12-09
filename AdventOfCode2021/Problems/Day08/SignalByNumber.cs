@@ -1,5 +1,9 @@
 ﻿namespace AdventOfCode2021.Problems
 {
+    /// <summary>
+    /// This was meant as an alternative to <see cref="SignalByNumber"/>,
+    /// but it seems to be much slower.
+    /// </summary>
     internal class SignalByNumber
     {
         private string Zero { get; set; }
