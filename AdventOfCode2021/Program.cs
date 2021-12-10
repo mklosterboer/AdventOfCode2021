@@ -1,8 +1,15 @@
 ﻿using AdventOfCode2021.Problems;
 using AdventOfCode2021.Utilities;
+using System.Diagnostics;
 
-IProblem problem = new Day08();
+var stopwatch = Stopwatch.StartNew();
+
+IProblem problem = new Day09();
 
 var runner = new Runner(problem);
 
 runner.Run();
+
+stopwatch.Stop();
+
+Console.WriteLine($"Total runtime: {stopwatch.ElapsedMilliseconds.ToString("F10")} ms");
