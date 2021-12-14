@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 var stopwatch = Stopwatch.StartNew();
 
-IProblem problem = new Day10();
+IProblem problem = new Day11();
 
 var runner = new Runner(problem);
 
@@ -12,4 +12,4 @@ runner.Run();
 
 stopwatch.Stop();
 
-Console.WriteLine($"Total runtime: {stopwatch.ElapsedMilliseconds.ToString("F10")} ms");
+Console.WriteLine($"Total runtime: {stopwatch.ElapsedMilliseconds:F10} ms");
