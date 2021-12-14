@@ -16,7 +16,8 @@
         }
 
         protected string[] GetInputValue()
-        {
+        { 
+
             return File.ReadAllLines($"Data/{ProblemName}.txt");
         }
 

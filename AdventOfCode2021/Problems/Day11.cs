@@ -10,18 +10,10 @@ namespace AdventOfCode2021.Problems
         {
             var input = GetInputValue();
 
-            var octopuses = new Dictionary<(int x, int y), Octopus>();
-
             var width = input[0].Length;
             var height = input.Length;
 
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    octopuses[(x, y)] = new Octopus(int.Parse(input[y][x].ToString()), x, y, height, width);
-                }
-            }
+            var octopuses = GetOctopuses(input);
 
             var flashCount = 0;
 
@@ -56,18 +48,10 @@ namespace AdventOfCode2021.Problems
         {
             var input = GetInputValue();
 
-            var octopuses = new Dictionary<(int x, int y), Octopus>();
-
             var width = input[0].Length;
             var height = input.Length;
 
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    octopuses[(x, y)] = new Octopus(int.Parse(input[y][x].ToString()), x, y, height, width);
-                }
-            }
+            var octopuses = GetOctopuses(input);
 
             var step = 0;
 
@@ -93,6 +77,24 @@ namespace AdventOfCode2021.Problems
 
 
             return step;
+        }
+
+        private static Dictionary<(int x, int y), Octopus> GetOctopuses(string[] input)
+        {
+            var octopuses = new Dictionary<(int x, int y), Octopus>();
+
+            var width = input[0].Length;
+            var height = input.Length;
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    octopuses[(x, y)] = new Octopus(int.Parse(input[y][x].ToString()), x, y, height, width);
+                }
+            }
+
+            return octopuses;
         }
 
         private static void PrintStep(int step, Dictionary<(int x, int y), Octopus> currentDictionary, int width, int height)
@@ -129,11 +131,7 @@ namespace AdventOfCode2021.Problems
         public int X { get; init; }
         public int Y { get; init; }
 
-        private bool AtEdgeLeft { get; init; }
-        private bool AtEdgeRight { get; init; }
-        private bool AtEdgeTop { get; init; }
-        private bool AtEdgeBottom { get; init; }
-
+        private List<(int x, int y)> Neighbors { get; init; }
 
         public Octopus(int initialEnergyLevel, int x, int y, int height, int width)
         {
@@ -141,10 +139,7 @@ namespace AdventOfCode2021.Problems
             X = x;
             Y = y;
 
-            AtEdgeLeft = X == 0;
-            AtEdgeTop = Y == 0;
-            AtEdgeRight = X == width - 1;
-            AtEdgeBottom = Y == height - 1;
+            Neighbors = InitilizeNeighbors(width, height);
         }
 
         public void ResetFlashed()
@@ -152,8 +147,7 @@ namespace AdventOfCode2021.Problems
             IsFlashing = false;
         }
 
-        public void IncrementEnergyLevel(
-            Dictionary<(int x, int y), Octopus> allOctopuses)
+        public void IncrementEnergyLevel(Dictionary<(int x, int y), Octopus> allOctopuses)
         {
             // Only increment if NOT already flashing.
             // This is reset externally for each step.
@@ -173,46 +167,62 @@ namespace AdventOfCode2021.Problems
             }
         }
 
-        public void IncrementNeighbors(
-            Dictionary<(int x, int y), Octopus> allOctopuses)
+        public void IncrementNeighbors(Dictionary<(int x, int y), Octopus> allOctopuses)
         {
-            if (!AtEdgeLeft)
+            foreach (var neighbor in Neighbors)
             {
-                allOctopuses[(X - 1, Y)].IncrementEnergyLevel(allOctopuses); // Left
+                allOctopuses[neighbor].IncrementEnergyLevel(allOctopuses);
+            }
+        }
 
-                if (!AtEdgeBottom)
+        private List<(int x, int y)> InitilizeNeighbors(int width, int height)
+        {
+            var neighbors = new List<(int x, int y)>();
+
+            var atEdgeLeft = X == 0;
+            var atEdgeTop = Y == 0;
+            var atEdgeRight = X == width - 1;
+            var atEdgeBottom = Y == height - 1;
+
+            if (!atEdgeLeft)
+            {
+                neighbors.Add((X - 1, Y)); // Left
+
+                if (!atEdgeBottom)
                 {
-                    allOctopuses[(X - 1, Y + 1)].IncrementEnergyLevel(allOctopuses); // Bottom Left
+                    neighbors.Add((X - 1, Y + 1)); // Bottom Left
                 }
-                if (!AtEdgeTop)
+                if (!atEdgeTop)
                 {
-                    allOctopuses[(X - 1, Y - 1)].IncrementEnergyLevel(allOctopuses); // Top Left
+                    neighbors.Add((X - 1, Y - 1)); // Top Left
                 }
             }
 
-            if (!AtEdgeRight)
+            if (!atEdgeRight)
             {
-                allOctopuses[(X + 1, Y)].IncrementEnergyLevel(allOctopuses); // Right
+                neighbors.Add((X + 1, Y)); // Right
 
-                if (!AtEdgeBottom)
+                if (!atEdgeBottom)
                 {
-                    allOctopuses[(X + 1, Y + 1)].IncrementEnergyLevel(allOctopuses); // Bottom Right
+                    neighbors.Add((X + 1, Y + 1)); // Bottom Right
                 }
-                if (!AtEdgeTop)
+                if (!atEdgeTop)
                 {
-                    allOctopuses[(X + 1, Y - 1)].IncrementEnergyLevel(allOctopuses); // Top Right
+                    neighbors.Add((X + 1, Y - 1)); // Top Right
                 }
             }
 
-            if (!AtEdgeTop)
+            if (!atEdgeTop)
             {
-                allOctopuses[(X, Y - 1)].IncrementEnergyLevel(allOctopuses); // Top
+                neighbors.Add((X, Y - 1)); // Top
             }
 
-            if (!AtEdgeBottom)
+            if (!atEdgeBottom)
             {
-                allOctopuses[(X, Y + 1)].IncrementEnergyLevel(allOctopuses); // Bottom
+                neighbors.Add((X, Y + 1)); // Bottom
             }
+
+            return neighbors;
         }
     }
 }
