@@ -27,18 +27,20 @@ namespace AdventOfCode2021.Problems
 
             for (int step = 1; step < 101; step++)
             {
-                // increase each energyLevel
+                // Increase each energyLevel
                 for (int y = 0; y < height; y++)
                 {
                     for (int x = 0; x < width; x++)
                     {
                         var currentOctopus = octopuses[(x, y)];
-                        currentOctopus.IncreaseEnergyLevel(octopuses);
+                        currentOctopus.IncrementEnergyLevel(octopuses);
                     }
                 }
 
                 //PrintStep(step, octopuses, width, height);
 
+                // Count number of flashing octopus from this step
+                // and reset flashed indicator for each octopus
                 octopuses.Where(x => x.Value.IsFlashing)
                     .ForEach(x =>
                     {
@@ -72,23 +74,21 @@ namespace AdventOfCode2021.Problems
             while (!octopuses.All(o => o.Value.EnergyLevel == 0))
             {
                 step++;
-                // increase each energyLevel
+                // Increase each energyLevel
                 for (int y = 0; y < height; y++)
                 {
                     for (int x = 0; x < width; x++)
                     {
                         var currentOctopus = octopuses[(x, y)];
-                        currentOctopus.IncreaseEnergyLevel(octopuses);
+                        currentOctopus.IncrementEnergyLevel(octopuses);
                     }
                 }
 
                 //PrintStep(step, octopuses, width, height);
 
+                // Rest IsFlashed for each flashing octopus
                 octopuses.Where(x => x.Value.IsFlashing)
-                    .ForEach(x =>
-                    {
-                        x.Value.ResetFlashed();
-                    });
+                    .ForEach(x => x.Value.ResetFlashed());
             }
 
 
@@ -126,20 +126,25 @@ namespace AdventOfCode2021.Problems
     {
         public int EnergyLevel { get; private set; }
         public bool IsFlashing { get; private set; }
-        public bool HasFlashedNeighbors { get; set; }
         public int X { get; init; }
         public int Y { get; init; }
 
-        private int Height { get; init; }
-        private int Width { get; init; }
+        private bool AtEdgeLeft { get; init; }
+        private bool AtEdgeRight { get; init; }
+        private bool AtEdgeTop { get; init; }
+        private bool AtEdgeBottom { get; init; }
+
 
         public Octopus(int initialEnergyLevel, int x, int y, int height, int width)
         {
             EnergyLevel = initialEnergyLevel;
             X = x;
             Y = y;
-            Height = height;
-            Width = width;
+
+            AtEdgeLeft = X == 0;
+            AtEdgeTop = Y == 0;
+            AtEdgeRight = X == width - 1;
+            AtEdgeBottom = Y == height - 1;
         }
 
         public void ResetFlashed()
@@ -147,77 +152,66 @@ namespace AdventOfCode2021.Problems
             IsFlashing = false;
         }
 
-        public void IncreaseEnergyLevel(
+        public void IncrementEnergyLevel(
             Dictionary<(int x, int y), Octopus> allOctopuses)
         {
+            // Only increment if NOT already flashing.
+            // This is reset externally for each step.
             if (!IsFlashing)
             {
+                // Increment EnergyLevel
                 EnergyLevel++;
-                TryFlash(allOctopuses);
-            }
-        }
 
-        public void TryFlash(
-            Dictionary<(int x, int y), Octopus> allOctopuses)
-        {
-            if (EnergyLevel > 9)
-            {
-                //flashCount++;
-                IsFlashing = true;
-                EnergyLevel = 0;
+                // Flash this octopus and increment neighbors
+                if (EnergyLevel > 9)
+                {
+                    IsFlashing = true;
+                    EnergyLevel = 0;
 
-                IncrementNeighbors(allOctopuses);
+                    IncrementNeighbors(allOctopuses);
+                }
             }
         }
 
         public void IncrementNeighbors(
             Dictionary<(int x, int y), Octopus> allOctopuses)
         {
-            // "touch" adjacent octopuses
-            if (X > 0)
+            if (!AtEdgeLeft)
             {
-                allOctopuses[(X - 1, Y)].ReceiveFlashFromNeighbor(allOctopuses); // Left
+                allOctopuses[(X - 1, Y)].IncrementEnergyLevel(allOctopuses); // Left
 
-                if (Y < Height - 1)
+                if (!AtEdgeBottom)
                 {
-                    allOctopuses[(X - 1, Y + 1)].ReceiveFlashFromNeighbor(allOctopuses); // Bottom Left
+                    allOctopuses[(X - 1, Y + 1)].IncrementEnergyLevel(allOctopuses); // Bottom Left
                 }
-                if (Y > 0)
+                if (!AtEdgeTop)
                 {
-                    allOctopuses[(X - 1, Y - 1)].ReceiveFlashFromNeighbor(allOctopuses); // Top Left
-                }
-            }
-            if (X < Width - 1)
-            {
-                allOctopuses[(X + 1, Y)].ReceiveFlashFromNeighbor(allOctopuses); // Right
-
-                if (Y < Height - 1)
-                {
-                    allOctopuses[(X + 1, Y + 1)].ReceiveFlashFromNeighbor(allOctopuses); // Bottom Right
-                }
-                if (Y > 0)
-                {
-                    allOctopuses[(X + 1, Y - 1)].ReceiveFlashFromNeighbor(allOctopuses); // Top Right
+                    allOctopuses[(X - 1, Y - 1)].IncrementEnergyLevel(allOctopuses); // Top Left
                 }
             }
 
-            if (Y > 0)
+            if (!AtEdgeRight)
             {
-                allOctopuses[(X, Y - 1)].ReceiveFlashFromNeighbor(allOctopuses); // Top
+                allOctopuses[(X + 1, Y)].IncrementEnergyLevel(allOctopuses); // Right
+
+                if (!AtEdgeBottom)
+                {
+                    allOctopuses[(X + 1, Y + 1)].IncrementEnergyLevel(allOctopuses); // Bottom Right
+                }
+                if (!AtEdgeTop)
+                {
+                    allOctopuses[(X + 1, Y - 1)].IncrementEnergyLevel(allOctopuses); // Top Right
+                }
             }
 
-            if (Y < Height - 1)
+            if (!AtEdgeTop)
             {
-                allOctopuses[(X, Y + 1)].ReceiveFlashFromNeighbor(allOctopuses); // Bottom
+                allOctopuses[(X, Y - 1)].IncrementEnergyLevel(allOctopuses); // Top
             }
-        }
 
-        public void ReceiveFlashFromNeighbor(
-            Dictionary<(int x, int y), Octopus> allOctopuses)
-        {
-            if (!IsFlashing)
+            if (!AtEdgeBottom)
             {
-                IncreaseEnergyLevel(allOctopuses);
+                allOctopuses[(X, Y + 1)].IncrementEnergyLevel(allOctopuses); // Bottom
             }
         }
     }
