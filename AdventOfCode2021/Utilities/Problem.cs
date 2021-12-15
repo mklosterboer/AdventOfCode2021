@@ -9,16 +9,19 @@
 
     abstract public class Problem : IProblem
     {
-        protected abstract string ProblemName { get; }
+        protected abstract string InputName { get; }
+
+        private string InputFilePath { get; init; }
 
         public Problem()
         {
+            var problemName = this.GetType().Name;
+            InputFilePath = $"Problems/{problemName}/{InputName}.txt";
         }
 
         protected string[] GetInputValue()
-        { 
-
-            return File.ReadAllLines($"Data/{ProblemName}.txt");
+        {
+            return File.ReadAllLines(InputFilePath);
         }
 
         protected IEnumerable<int> GetInputNumberList()

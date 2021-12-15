@@ -4,7 +4,8 @@ namespace AdventOfCode2021.Problems
 {
     internal class Day08 : Problem
     {
-        protected override string ProblemName => "Day08Test";
+        protected override string InputName => "Actual";
+
         private string[] Input { get; set; }
 
         private const int OneLength = 2;

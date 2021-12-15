@@ -4,7 +4,7 @@ namespace AdventOfCode2021.Problems
 {
     internal class Day11 : Problem
     {
-        protected override string ProblemName => "Day11";
+        protected override string InputName => "Actual";
 
         public override object PartOne()
         {

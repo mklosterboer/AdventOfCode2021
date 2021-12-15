@@ -4,7 +4,7 @@ namespace AdventOfCode2021.Problems
 {
     internal class Day06 : Problem
     {
-        protected override string ProblemName => "Day06";
+        protected override string InputName => "Actual";
 
         private const int NewFishGestationPeriod = 8;
         private const int ExistingFishGestationPeriod = 6;
