@@ -6,15 +6,18 @@ namespace AdventOfCode2021.Utilities
     {
         private readonly IProblem Problem;
         private readonly Stopwatch Stopwatch;
+        private readonly string ProblemName;
 
         public Runner(IProblem problem)
         {
             Problem = problem;
             Stopwatch = Stopwatch.StartNew();
+            ProblemName = problem.GetType().Name;
         }
 
         public void Run()
         {
+            Console.WriteLine($"Problem: {ProblemName}");
             StartStopwatch();
             var partOneOutput = Problem.PartOne();
             var partOneTime = GetExecutionTime();
