@@ -99,95 +99,95 @@ namespace AdventOfCode2021.Problems
 
             return nodes.Values.ToList();
         }
-    }
 
-    internal class Node
-    {
-        public string Name { get; set; }
-
-        public HashSet<Node> Children { get; set; }
-        public bool IsSmallCave { get; init; }
-        public bool IsStart { get; init; }
-        public bool IsEnd { get; init; }
-
-        public Node(string name)
+        private class Node
         {
-            Name = name;
-            Children = new HashSet<Node>();
-            IsSmallCave = char.IsLower(name[0]);
-            IsStart = name == "start";
-            IsEnd = name == "end";
-        }
+            public string Name { get; set; }
 
-        public void AddChild(Node child)
-        {
-            Children.Add(child);
-        }
-    }
+            public HashSet<Node> Children { get; set; }
+            public bool IsSmallCave { get; init; }
+            public bool IsStart { get; init; }
+            public bool IsEnd { get; init; }
 
-    internal class Graph
-    {
-        public int PathCount { get; set; }
-        private readonly Stack<Node> CurrentPath = new();
-        private readonly List<List<Node>> AllPaths = new();
-
-        public int GetAllPaths(Node startAt, Node endAt, bool shouldLimitVisit)
-        {
-            DFS(startAt, endAt, shouldLimitVisit);
-
-            return AllPaths.Count;
-        }
-
-        public void DFS(Node startAt, Node endAt, bool shouldLimitVisit)
-        {
-            if (startAt.IsStart && CurrentPath.Contains(startAt))
+            public Node(string name)
             {
-                return;
+                Name = name;
+                Children = new HashSet<Node>();
+                IsSmallCave = char.IsLower(name[0]);
+                IsStart = name == "start";
+                IsEnd = name == "end";
             }
 
-            CurrentPath.Push(startAt);
-
-            if (startAt == endAt)
+            public void AddChild(Node child)
             {
-                AllPaths.Add(CurrentPath.Reverse().ToList());
+                Children.Add(child);
+            }
+        }
+
+        private class Graph
+        {
+            public int PathCount { get; set; }
+            private readonly Stack<Node> CurrentPath = new();
+            private readonly List<List<Node>> AllPaths = new();
+
+            public int GetAllPaths(Node startAt, Node endAt, bool shouldLimitVisit)
+            {
+                DFS(startAt, endAt, shouldLimitVisit);
+
+                return AllPaths.Count;
+            }
+
+            public void DFS(Node startAt, Node endAt, bool shouldLimitVisit)
+            {
+                if (startAt.IsStart && CurrentPath.Contains(startAt))
+                {
+                    return;
+                }
+
+                CurrentPath.Push(startAt);
+
+                if (startAt == endAt)
+                {
+                    AllPaths.Add(CurrentPath.Reverse().ToList());
+                    CurrentPath.Pop();
+
+                    return;
+                }
+
+                if (startAt.IsSmallCave && ShouldSkip(startAt, shouldLimitVisit))
+                {
+                    CurrentPath.Pop();
+                    return;
+                }
+
+                foreach (var child in startAt.Children)
+                {
+                    DFS(child, endAt, shouldLimitVisit);
+                }
+
                 CurrentPath.Pop();
-
-                return;
             }
 
-            if (startAt.IsSmallCave && ShouldSkip(startAt, shouldLimitVisit))
+            private bool ShouldSkip(Node node, bool shouldLimitVisit)
             {
-                CurrentPath.Pop();
-                return;
-            }
+                if (shouldLimitVisit)
+                {
+                    // Should limit to one
+                    return CurrentPath.Count(n => n.Equals(node)) > 1;
+                }
+                else
+                {
+                    // Should limit to twice for one small cave,
+                    // then only once for every other cave.
+                    var otherCavesVisitedTwiceAlready = CurrentPath
+                        .Where(n => n.IsSmallCave && !n.Equals(node))
+                        .GroupBy(c => c)
+                        .Any(g => g.Count() > 1);
 
-            foreach (var child in startAt.Children)
-            {
-                DFS(child, endAt, shouldLimitVisit);
-            }
-
-            CurrentPath.Pop();
-        }
-
-        private bool ShouldSkip(Node node, bool shouldLimitVisit)
-        {
-            if (shouldLimitVisit)
-            {
-                // Should limit to one
-                return CurrentPath.Count(n => n.Equals(node)) > 1;
-            }
-            else
-            {
-                // Should limit to twice for one small cave,
-                // then only once for every other cave.
-                var otherCavesVisitedTwiceAlready = CurrentPath
-                    .Where(n => n.IsSmallCave && !n.Equals(node))
-                    .GroupBy(c => c)
-                    .Any(g => g.Count() > 1);
-
-                return otherCavesVisitedTwiceAlready
-                    && CurrentPath.Count(c => c.Equals(node)) == 2
-                    || CurrentPath.Count(c => c.Equals(node)) > 2;
+                    return otherCavesVisitedTwiceAlready
+                        && CurrentPath.Count(c => c.Equals(node)) == 2
+                        || CurrentPath.Count(c => c.Equals(node)) > 2;
+                }
             }
         }
     }
