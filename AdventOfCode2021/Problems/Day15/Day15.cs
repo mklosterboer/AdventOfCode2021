@@ -8,7 +8,6 @@ namespace AdventOfCode2021.Problems
 
         public override object PartOne()
         {
-            //return "";
             var input = GetInputValue();
             var nodes = GetNodes(input);
 
@@ -35,17 +34,12 @@ namespace AdventOfCode2021.Problems
             Node endNode = nodes.Last().Value;
 
             var queue = new List<Node>() { startNode };
-            var visited = new List<Node>();
+            var visited = new Dictionary<(int x, int y), Node>();
 
-            // Use A* to find best path
+            // I had to ditch the hueristic. I guess this is just Dijkstra now? 
             while (queue.Any())
             {
-                if (visited.Count % 100 == 0)
-                {
-                    Console.WriteLine($"Visited {visited.Count} out of {nodes.Count}");
-                }
-
-                var checkNode = queue.OrderBy(x => x.PathHueristic).First();
+                var checkNode = queue.OrderBy(x => x.PathRisk).First();
 
                 if (checkNode == endNode)
                 {
@@ -68,22 +62,19 @@ namespace AdventOfCode2021.Problems
                     return path;
                 }
 
-                visited.Add(checkNode);
+                visited[(checkNode.X, checkNode.Y)] = checkNode;
                 queue.Remove(checkNode);
 
                 foreach (var node in checkNode.AdjacentNodes)
                 {
-                    if (visited.Contains(node))
+                    if (visited.ContainsKey((node.X, node.Y)))
                     {
-                        // I need to double check if this is correct.
+                        // Already checked this node. No need to look again. 
                         continue;
                     }
 
                     if (queue.Contains(node))
                     {
-                        if(node.Distance > node.RiskDistance)
-                        {
-                        }
                         node.TryAddNewParent(checkNode);
                     }
                     else
@@ -94,8 +85,8 @@ namespace AdventOfCode2021.Problems
                 }
             }
 
-            // Just to keep the complier happy while I work
-            return null;
+            // Shouldn't ever reach here. 
+            return new List<Node>();
         }
 
 
@@ -189,7 +180,6 @@ namespace AdventOfCode2021.Problems
 
         private static Dictionary<(int X, int Y), Node> FillAdjacentNodes(Dictionary<(int X, int Y), Node> nodes, int height, int width)
         {
-
             foreach (var dn in nodes)
             {
                 var node = dn.Value;
@@ -224,8 +214,6 @@ namespace AdventOfCode2021.Problems
             public int Y { get; set; }
             public long Risk { get; private set; }
             public long Distance { get; init; }
-            public long RiskDistance => (Distance) + Risk;
-            public long PathHueristic { get; private set; }
             public long PathRisk { get; private set; }
             public List<Node> AdjacentNodes { get; private set; }
             public Node? ParentNode { get; private set; }
@@ -237,7 +225,6 @@ namespace AdventOfCode2021.Problems
                 Risk = risk;
                 AdjacentNodes = new List<Node>();
                 Distance = Math.Abs(endNodeCoordinates.X - x) + Math.Abs(endNodeCoordinates.Y - y);
-                PathHueristic = RiskDistance;
             }
 
             public void AddAdjacentNode(Node adjacentNode)
@@ -248,7 +235,6 @@ namespace AdventOfCode2021.Problems
             public void UpdateParentNode(Node parent)
             {
                 ParentNode = parent;
-                PathHueristic = parent.PathHueristic + RiskDistance;
                 PathRisk = parent.PathRisk + Risk;
             }
 
