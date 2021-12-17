@@ -1,23 +1,16 @@
 ﻿namespace AdventOfCode2021.Problems
 {
-    internal class OperatorPacket : Packet2
+    internal class OperatorPacket : Packet
     {
         public List<Packet> SubPackets = new();
-        private string BinaryRepresentation { get; init; }
-        private int Version { get; set; }
-        private int TypeId { get; set; }
         private int LengthOfControlBits { get; set; }
+        private int LengthType { get; set; }
 
-        public OperatorPacket(string binaryInput)
+        private const int TotalLengthControlBits = 22;
+        private const int TotalCountControlBits = 18;
+
+        public OperatorPacket(string binaryInput) : base(binaryInput)
         {
-            BinaryRepresentation = binaryInput;
-
-            var versionBits = BinaryRepresentation[0..3];
-            Version = Convert.ToInt32(versionBits, 2);
-
-            var typeIdBits = BinaryRepresentation[3..6];
-            TypeId = Convert.ToInt32(typeIdBits, 2);
-
             InitSubPackets();
         }
 
@@ -26,12 +19,11 @@
             var workingString = BinaryRepresentation[6..];
 
             // Get the length type then pop off this bit
-            var lengthType = workingString[0];
+            LengthType = int.Parse(workingString[0].ToString());
             workingString = workingString[1..];
 
-            if (lengthType == '0')
+            if (LengthType == 0)
             {
-                LengthOfControlBits = 6 + 16;
                 // The next 15 bits contain the total length of the subpackets
                 var lengthOfSubPackets = Convert.ToInt32(workingString[0..15], 2);
                 workingString = workingString[15..];
@@ -41,10 +33,10 @@
                 while (lengthProcessed < lengthOfSubPackets)
                 {
                     // Create the new packet
-                    var newPacket = new Packet(workingString);
+                    var newPacket = Create(workingString);
 
                     // Get the length of bits used to create that packet
-                    var bitsUsed = newPacket.GetBitLength();
+                    var bitsUsed = newPacket.GetPacketLength();
 
                     // Update working string to move to the new index
                     workingString = workingString[bitsUsed..];
@@ -58,9 +50,6 @@
             }
             else
             {
-                // This is the number of bits used by this packet
-                LengthOfControlBits = 6 + 12;
-
                 // The next 11 bits contain the number of subpackets
                 var numberOfSubPackets = Convert.ToInt32(workingString[0..11], 2);
                 workingString = workingString[11..];
@@ -70,10 +59,10 @@
                 while (numberOfSubPacketsProcessed < numberOfSubPackets)
                 {
                     // Create the new packet
-                    var newPacket = new Packet(workingString);
+                    var newPacket = Create(workingString);
 
                     // Get the length of bits used to create that packet
-                    var bitsUsed = newPacket.GetBitLength();
+                    var bitsUsed = newPacket.GetPacketLength();
 
                     // Update working string to move to the new index
                     workingString = workingString[bitsUsed..];
@@ -87,17 +76,28 @@
             }
         }
 
-        public override int GetBitLength()
+        public override int GetPacketLength()
         {
-            // bit length of value subpackets
-            var subpacketLengths = SubPackets.Sum(x => x.GetBitLength());
+            // packet length of all subpackets
+            var subpacketLengths = SubPackets.Sum(x => x.GetPacketLength());
 
-            return subpacketLengths + LengthOfControlBits;
+            // Depending on the packet length type, there will be a different
+            // number of control bits.
+            var lengthOfControlBits = LengthType == 0
+                ? TotalLengthControlBits
+                : TotalCountControlBits;
+
+            return subpacketLengths + lengthOfControlBits;
         }
 
         public override int GetVersionSumOfSubPackets()
         {
             return Version + SubPackets.Sum(x => x.GetVersionSumOfSubPackets());
+        }
+
+        public override long GetValue()
+        {
+            return 0L;
         }
     }
 }

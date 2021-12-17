@@ -1,29 +1,20 @@
 ﻿namespace AdventOfCode2021.Problems
 {
-    internal class ValuePacket : Packet2
+    internal class ValuePacket : Packet
     {
-        private string BinaryRepresentation { get; init; }
-        private int Version { get; set; }
-        private int TypeId { get; set; }
-        private int BitLength { get; set; }
+        private int PacketLength { get; set; }
         private long LiteralPacketValue { get; set; }
 
-        public ValuePacket(string binaryInput)
+        public ValuePacket(string binaryInput) : base(binaryInput)
         {
-            BinaryRepresentation = binaryInput;
-
-            var versionBits = BinaryRepresentation[0..3];
-            Version = Convert.ToInt32(versionBits, 2);
-
-            var typeIdBits = BinaryRepresentation[3..6];
-            TypeId = Convert.ToInt32(typeIdBits, 2);
+            // Initialize BitLength with header bit length
+            PacketLength = 6;
 
             InitLiteralPacketValue();
         }
 
         private void InitLiteralPacketValue()
         {
-            var _bitLength = 6;
             var workingString = BinaryRepresentation[6..];
 
             var packetValueString = "";
@@ -40,21 +31,18 @@
                 packetValueString += nextBit[1..];
 
                 workingString = workingString[5..];
-                _bitLength += 5;
+
+                // Increment to keep track of how long this packet is
+                PacketLength += 5;
             }
 
             LiteralPacketValue = Convert.ToInt64(packetValueString, 2);
-            BitLength = _bitLength;
         }
 
-        public override int GetBitLength()
-        {
-            return BitLength;
-        }
+        public override int GetPacketLength() => PacketLength;
 
-        public override int GetVersionSumOfSubPackets()
-        {
-            return Version;
-        }
+        public override int GetVersionSumOfSubPackets() => Version;
+
+        public override long GetValue() => LiteralPacketValue;
     }
 }

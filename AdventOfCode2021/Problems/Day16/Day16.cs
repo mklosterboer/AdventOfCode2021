@@ -10,27 +10,20 @@ namespace AdventOfCode2021.Problems
         public override object PartOne()
         {
             var input = GetFirstRow();
-            var packet = Packet.InitFromHexInput(input);
+            var binaryInput = Day16Helpers.HexToBinary(input);
+            var packet = Packet.Create(binaryInput);
 
             return packet.GetVersionSumOfSubPackets();
         }
 
         public override object PartTwo()
         {
-            return "";
-        }
+            var input = GetFirstRow();
+            var binaryInput = Day16Helpers.HexToBinary(input);
+            var packet = Packet.Create(binaryInput);
 
-        //private int SumVersions(Packet packet)
-        //{
-        //    if (packet.IsValuePacket)
-        //    {
-        //        return packet.Version;
-        //    }
-        //    else
-        //    {
-        //        return packet.Version + packet.SubPackets.Select(SumVersions).Sum();
-        //    }
-        //}
+            return packet.GetValue();
+        }
     }
 
     public static class Day16Helpers
@@ -64,27 +57,6 @@ namespace AdventOfCode2021.Problems
             {
                 result += HexToBinaryDictionary[c];
             }
-
-            return result;
-        }
-        public static string BinaryToHex(string input)
-        {
-            var paddedBits = PadValueWithZeros(input);
-            return HexToBinaryDictionary.First(c => c.Value == paddedBits).Key.ToString();
-        }
-
-        public static string PadValueWithZeros(string input)
-        {
-            var result = "";
-
-            var originalLength = input.Length;
-
-            for (var i = 0; i < 4 - originalLength; i++)
-            {
-                result += "0";
-            }
-
-            result += input;
 
             return result;
         }

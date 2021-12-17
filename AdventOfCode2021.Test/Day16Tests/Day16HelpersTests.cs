@@ -16,19 +16,5 @@ namespace AdventOfCode2021.Test.Day16Tests
             // Assert
             Assert.Equal(expected, actual);
         }
-
-        [Theory]
-        [InlineData("1000", "1000")]
-        [InlineData("100", "0100")]
-        [InlineData("10", "0010")]
-        [InlineData("1", "0001")]
-        public void PadValueWithZeros_AddsZeros(string input, string expected)
-        {
-            // Act
-            var actual = Day16Helpers.PadValueWithZeros(input);
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
     }
 }
