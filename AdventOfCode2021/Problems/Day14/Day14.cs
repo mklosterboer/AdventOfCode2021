@@ -147,7 +147,7 @@ namespace AdventOfCode2021.Problems
         }
     }
 
-    internal static class Helpers
+    internal static class DictionaryExtensions
     {
         internal static void CreateOrIncrementItem(this Dictionary<string, long> dictionary, string newValue)
         {
