@@ -97,6 +97,40 @@
 
         public override long GetValue()
         {
+            switch (TypeId)
+            {
+                case 0:
+                    return SubPackets.Sum(x => x.GetValue());
+                case 1:
+                    var acc = SubPackets[0].GetValue();
+                    if (SubPackets.Count > 1)
+                    {
+                        for (var i = 1; i < SubPackets.Count; i++)
+                        {
+                            acc *= SubPackets[i].GetValue();
+                        }
+                    }
+                    return acc;
+                case 2:
+                    return SubPackets.Min(x => x.GetValue());
+                case 3:
+                    return SubPackets.Max(x => x.GetValue());
+                case 5:
+                    return SubPackets.First().GetValue() > SubPackets.Last().GetValue()
+                        ? 1
+                        : 0;
+                case 6:
+                    return SubPackets.First().GetValue() < SubPackets.Last().GetValue()
+                        ? 1
+                        : 0;
+                case 7:
+                    return SubPackets.First().GetValue() == SubPackets.Last().GetValue()
+                        ? 1
+                        : 0;
+                default:
+                    break;
+            }
+
             return 0L;
         }
     }
