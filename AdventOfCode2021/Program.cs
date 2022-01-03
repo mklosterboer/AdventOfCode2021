@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 var stopwatch = Stopwatch.StartNew();
 
-IProblem problem = new Day17();
+IProblem problem = new Day18();
 
 var runner = new Runner(problem);
 
