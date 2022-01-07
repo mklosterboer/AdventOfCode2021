@@ -56,8 +56,7 @@ namespace AdventOfCode2021.Problems
             var basins = new List<Basin>();
             foreach (var lowPoint in lowPoints)
             {
-                var basin = new Basin();
-                basin.SetLowPoint(lowPoint);
+                var basin = new Basin(lowPoint);
                 RecursiveBuildBasin(basin, lowPoint);
                 basins.Add(basin);
             }
